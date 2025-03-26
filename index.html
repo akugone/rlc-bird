@@ -11,6 +11,14 @@
         margin: 0;
         overflow: hidden;
       }
+      #gameContainer {
+        width: 1200;
+        height: 800;
+        margin: 0 auto;
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      }
     </style>
   </head>
   <body
@@ -94,10 +102,10 @@
         });
       }
 
-      // Set canvas size to window size
+      // Set canvas size to fixed dimensions
       function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = 1200;
+        canvas.height = 700;
       }
 
       window.addEventListener("resize", resizeCanvas);
@@ -272,27 +280,25 @@
       function draw() {
         // Draw background
         if (backgroundImage.complete) {
-          // Calculate scaling to cover the entire canvas while maintaining aspect ratio
-          const scaleX = canvas.width / IMAGES.bgWidth;
-          const scaleY = canvas.height / IMAGES.bgHeight;
-          const scale = Math.max(scaleX, scaleY);
+          // Create a scaled and repeating pattern
+          const scaledBg = document.createElement("canvas");
+          scaledBg.width = IMAGES.bgWidth * IMAGES.bgScale;
+          scaledBg.height = IMAGES.bgHeight * IMAGES.bgScale;
+          const bgCtx = scaledBg.getContext("2d");
 
-          // Calculate dimensions to cover the canvas
-          const scaledWidth = IMAGES.bgWidth * scale;
-          const scaledHeight = IMAGES.bgHeight * scale;
-
-          // Calculate position to center the background
-          const x = (canvas.width - scaledWidth) / 2;
-          const y = (canvas.height - scaledHeight) / 2;
-
-          // Draw the background image scaled to cover the canvas
-          ctx.drawImage(
+          // Draw the background image at the scaled size
+          bgCtx.drawImage(
             backgroundImage,
-            x,
-            y,
-            scaledWidth,
-            scaledHeight
+            0,
+            0,
+            IMAGES.bgWidth * IMAGES.bgScale,
+            IMAGES.bgHeight * IMAGES.bgScale
           );
+
+          // Create pattern from scaled background
+          const pattern = ctx.createPattern(scaledBg, "repeat");
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else {
           // Fallback background
           ctx.fillStyle = "#4B5563";
