@@ -272,25 +272,27 @@
       function draw() {
         // Draw background
         if (backgroundImage.complete) {
-          // Create a scaled and repeating pattern
-          const scaledBg = document.createElement("canvas");
-          scaledBg.width = IMAGES.bgWidth * IMAGES.bgScale;
-          scaledBg.height = IMAGES.bgHeight * IMAGES.bgScale;
-          const bgCtx = scaledBg.getContext("2d");
+          // Calculate scaling to cover the entire canvas while maintaining aspect ratio
+          const scaleX = canvas.width / IMAGES.bgWidth;
+          const scaleY = canvas.height / IMAGES.bgHeight;
+          const scale = Math.max(scaleX, scaleY);
 
-          // Draw the background image at the scaled size
-          bgCtx.drawImage(
+          // Calculate dimensions to cover the canvas
+          const scaledWidth = IMAGES.bgWidth * scale;
+          const scaledHeight = IMAGES.bgHeight * scale;
+
+          // Calculate position to center the background
+          const x = (canvas.width - scaledWidth) / 2;
+          const y = (canvas.height - scaledHeight) / 2;
+
+          // Draw the background image scaled to cover the canvas
+          ctx.drawImage(
             backgroundImage,
-            0,
-            0,
-            IMAGES.bgWidth * IMAGES.bgScale,
-            IMAGES.bgHeight * IMAGES.bgScale
+            x,
+            y,
+            scaledWidth,
+            scaledHeight
           );
-
-          // Create pattern from scaled background
-          const pattern = ctx.createPattern(scaledBg, "repeat");
-          ctx.fillStyle = pattern;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else {
           // Fallback background
           ctx.fillStyle = "#4B5563";
